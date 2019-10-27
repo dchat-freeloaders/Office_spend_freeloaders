@@ -10,6 +10,7 @@ public class Commands {
     public static final String ADD_PURCHASE = "/addPurchase";
     public static final String DELETE_PURCHASE = "/deletePurchase";
     public static final String TOTAL = "/total";
+    public static final String TOTAL_EXPORT = "/export";
 
 
 }

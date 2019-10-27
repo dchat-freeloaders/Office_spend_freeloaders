@@ -1,10 +1,10 @@
 package com.github.iauglov.mariya.demo.command;
 
+import com.github.iauglov.mariya.demo.service.ExportService;
 import com.github.iauglov.mariya.demo.service.UserService;
 import im.dlg.botsdk.Bot;
 import im.dlg.botsdk.domain.InteractiveEvent;
 import im.dlg.botsdk.domain.Message;
-import java.time.Instant;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +15,7 @@ import static com.github.iauglov.mariya.demo.command.Commands.*;
 public class CommandFactory {
     private final Bot bot;
     private final UserService userService;
+    private final ExportService exportService;
 
     public Command getCommand(Message message) {
         switch (message.getText()) {
@@ -48,7 +49,8 @@ public class CommandFactory {
                 return new DeleteCommand(bot, event, userService);
             case TOTAL:
                 return new Total(bot, event, userService);
-
+            case TOTAL_EXPORT:
+                return new Export(bot, event, userService, exportService);
 
             default:
                 return new UndefinedCommand(bot, event);

@@ -30,17 +30,20 @@ public class MenuCommand extends AbstractCommand {
         val settingsButton = new InteractiveButton(Commands.SETTINGS, "Настройки");
         val deletePurchase = new InteractiveButton(Commands.DELETE_PURCHASE, "Удалить покупку");
         val total = new InteractiveButton(Commands.TOTAL, "Общая информация");
+        val export = new InteractiveButton(Commands.TOTAL_EXPORT, "Экспортировать в Excel текущие покупки");
 
         val addAction = new InteractiveAction(UUID.randomUUID().toString(), addButton);
         val settingsAction = new InteractiveAction(UUID.randomUUID().toString(), settingsButton);
         val deleteAction = new InteractiveAction(UUID.randomUUID().toString(), deletePurchase);
         val totalAction = new InteractiveAction(UUID.randomUUID().toString(), total);
+        val exportAction = new InteractiveAction(UUID.randomUUID().toString(), export);
 
         return new InteractiveGroup("Главное меню", "Выберите действия", Arrays.asList(
                 addAction,
                 deleteAction,
                 totalAction,
-                settingsAction
+                settingsAction,
+                exportAction
         ));
     }
 }
