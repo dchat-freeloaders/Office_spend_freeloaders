@@ -7,6 +7,8 @@ import im.dlg.botsdk.Bot;
 import im.dlg.botsdk.domain.InteractiveEvent;
 import im.dlg.botsdk.domain.Message;
 import im.dlg.botsdk.domain.Peer;
+import java.time.Clock;
+import java.util.Arrays;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -45,7 +47,7 @@ public class CommandExecutor {
                         userService.setLastUserState(userId, SETUP_PERIOD);
                     }
                 } catch (Exception ex) {
-                    sendError(message.getSender());
+                    if (!userService.userInited(userId)) sendError(message.getSender());
                 }
             } else if (SETUP_PERIOD.equalsIgnoreCase(lastUserState)) {
                 try {
@@ -86,7 +88,7 @@ public class CommandExecutor {
                         message.getSender(),
                         message.getMessageId(),
                         MENU,
-                        Instant.now().toEpochMilli(),
+                        Instant.now(Clock.systemUTC()).toEpochMilli(),
                         null
                 )).execute();
             }
@@ -99,12 +101,14 @@ public class CommandExecutor {
                 purchase.getName(),
                 purchase.getCost(),
                 purchase.getCount());
-        bot.messaging().sendText(message.getSender(), msg);
-        User user = userService.getUser(userId);
-        if (BigDecimal.ZERO.compareTo(user.freeAmount()) > 0) {
-            BigDecimal bigDecimal = user.freeAmount();
-            bot.messaging().sendText(message.getSender(), "Вы привысили лимит на " + bigDecimal.abs().subtract(user.getBudget()).toPlainString());
-        }
+        bot.messaging().sendText(message.getSender(), msg).thenAccept(uuid -> {
+            User user = userService.getUser(userId);
+
+            if (BigDecimal.ZERO.compareTo(user.freeAmount()) > 0) {
+                BigDecimal bigDecimal = user.freeAmount();
+                bot.messaging().sendText(message.getSender(), "Вы привысили лимит на " + bigDecimal.abs().subtract(user.getBudget()).toPlainString());
+            }
+        });
     }
 
     public void processInteractiveEvent(InteractiveEvent event) {
@@ -116,15 +120,17 @@ public class CommandExecutor {
             if (userService.userInited(userId)) {
                 String text = event.getValue();
                 String[] split = text.split("-");
-                if (split.length > 0 && "delete".equals(split[1].trim())) {
-                    userService.deletePurchase(userId, split[0].trim());
+                if (split.length > 0 && "delete".equals(split[split.length - 1].trim())) {
+
+                    String purchase = String.join("-", Arrays.copyOfRange(split, 0, split.length - 1));
+                    userService.deletePurchase(userId, purchase.trim());
                     bot.messaging().sendText(event.getPeer(), "Удалено");
                     factory.getCommand(new Message(
                             null,
                             event.getPeer(),
                             event.getMid(),
                             MENU,
-                            Instant.now().toEpochMilli(),
+                            Instant.now(Clock.systemUTC()).toEpochMilli(),
                             null
                     )).execute();
                 }
@@ -150,11 +156,15 @@ public class CommandExecutor {
 
     private Purchase parsePurchase(String text) {
         String[] split = text.split(":");
+
         if (split.length == 2) {
             return new Purchase(split[0].trim(), new BigDecimal(split[1].trim()), 1);
         }
         if (split.length == 3) {
             return new Purchase(split[0].trim(), new BigDecimal(split[1].trim()), Integer.parseInt(split[2].trim()));
+        }
+        if (split.length > 4) {
+            return new Purchase(split[0].trim(), new BigDecimal(split[split.length - 2].trim()), Integer.parseInt(split[split.length - 1].trim()));
         }
         return null;
     }

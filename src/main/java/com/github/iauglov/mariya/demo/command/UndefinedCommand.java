@@ -19,6 +19,6 @@ public class UndefinedCommand extends AbstractCommand {
 
     @Override
     public void execute() {
-        bot.messaging().sendText(sender, "Не корректная комманда");
+        bot.messaging().sendText(sender, "Некорректная комманда.");
     }
 }

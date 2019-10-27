@@ -4,6 +4,7 @@ import com.github.iauglov.mariya.demo.service.UserService;
 import im.dlg.botsdk.Bot;
 import im.dlg.botsdk.domain.InteractiveEvent;
 import im.dlg.botsdk.domain.Message;
+import java.time.Instant;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -30,8 +31,11 @@ public class CommandFactory {
 
     public Command getCommand(InteractiveEvent event) {
         switch (event.getValue()) {
+            case MENU: {
+                return new MenuCommand(bot, event);
+            }
             case SETTINGS:
-                return new SettingsCommand(bot, event);
+                return new SettingsCommand(bot, event, event.getId());
             case SETUP_PERIOD:
                 userService.setLastUserState(event.getPeer().getId(), SETUP_PERIOD);
                 return new SetupPeriodCommand(bot, event);

@@ -27,7 +27,14 @@ public class DeleteCommand extends AbstractCommand {
     }
 
     public InteractiveGroup buildUI() {
-        List<String> purchases = userService.getAllOldPurchases(sender.getId());
+        List<String> purchases;
+        try {
+            purchases = userService.getAllOldPurchases(sender.getId());
+            if (purchases.size() == 0) throw new NullPointerException();
+        } catch (NullPointerException e) {
+            bot.messaging().sendText(sender, "У вас нет покупок.");
+            throw e;
+        }
         List<InteractiveSelectOption> list = purchases.stream().map(it -> new InteractiveSelectOption(it + "-delete", it)).collect(Collectors.toList());
         InteractiveSelect select = new InteractiveSelect("Товары", purchases.get(0), list);
         return new InteractiveGroup("Выберите товар который нужно удалить.", "", Collections.singletonList(

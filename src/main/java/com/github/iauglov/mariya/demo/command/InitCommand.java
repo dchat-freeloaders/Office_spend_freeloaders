@@ -29,7 +29,7 @@ public class InitCommand extends AbstractCommand {
     private InteractiveGroup buildUI() {
         List<InteractiveAction> actions = new ArrayList<>();
         InteractiveButton settingsButton = new InteractiveButton(SETTINGS, "Настройки");
-        InteractiveAction action = new InteractiveAction(UUID.randomUUID().toString(), settingsButton);
+        InteractiveAction action = new InteractiveAction("non-skip", settingsButton);
         actions.add(action);
         return new InteractiveGroup("Intro", INTRO, actions);
     }

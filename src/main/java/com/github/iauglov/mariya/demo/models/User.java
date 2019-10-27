@@ -1,5 +1,6 @@
 package com.github.iauglov.mariya.demo.models;
 
+import java.time.Clock;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -21,7 +22,7 @@ public class User {
     public User() {
         cart = new HashSet<>();
         history = new ArrayList<>();
-        startPeriod = Instant.now();
+        startPeriod = Instant.now(Clock.systemUTC());
     }
 
     public void newPeriod() {
@@ -30,7 +31,7 @@ public class User {
                 startPeriod.plus(period, ChronoUnit.DAYS),
                 new HashSet<>(cart)
         ));
-        startPeriod = Instant.now();
+        startPeriod = Instant.now(Clock.systemUTC());
         cart.clear();
     }
 
@@ -64,6 +65,6 @@ public class User {
     }
 
     public BigDecimal freeAmount() {
-        return budget.subtract(cart.stream().map(it -> it.getCost().multiply(new BigDecimal(it.getCount()))).reduce(BigDecimal::add).get());
+        return budget.subtract(cart.stream().map(it -> it.getCost().multiply(new BigDecimal(it.getCount()))).reduce(BigDecimal::add).orElse(BigDecimal.ZERO));
     }
 }

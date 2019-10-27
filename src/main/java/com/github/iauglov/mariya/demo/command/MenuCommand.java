@@ -29,7 +29,7 @@ public class MenuCommand extends AbstractCommand {
         val addButton = new InteractiveButton(Commands.ADD_PURCHASE, "Добавить покупку");
         val settingsButton = new InteractiveButton(Commands.SETTINGS, "Настройки");
         val deletePurchase = new InteractiveButton(Commands.DELETE_PURCHASE, "Удалить покупку");
-        val total = new InteractiveButton(Commands.TOTAL, "Общая информация.");
+        val total = new InteractiveButton(Commands.TOTAL, "Общая информация");
 
         val addAction = new InteractiveAction(UUID.randomUUID().toString(), addButton);
         val settingsAction = new InteractiveAction(UUID.randomUUID().toString(), settingsButton);

@@ -24,16 +24,16 @@ public class AddPurchase extends AbstractCommand {
 
     @Override
     public void execute() {
-        bot.messaging().sendText(sender, "Для добавления покупки введите сообщение формата название товара, цену и колличество через двоеточие\n" +
-                "Формат название : цена : кол-во\nМожно просто писать сообщение в таком формате и бот добавит его.\n");
-        sendList();
+        bot.messaging().sendText(sender, "Для добавления покупки введите сообщение, содержащее название товара, цену и колличество через двоеточие\n" +
+                "Формат: \"название : цена : кол-во\".\nМожно просто писать сообщение в таком формате и бот добавит его.\n").thenAccept(uuid -> sendList());
     }
 
     public void sendList() {
         List<String> allOldPurchases = userService.getAllOldPurchases(sender.getId());
         if (allOldPurchases.size() > 0) {
-            bot.messaging().sendText(sender, "Так же можно выбрать бота из каталога довелных ранее.");
-            bot.interactiveApi().send(sender, buildUI(allOldPurchases));
+            bot.messaging().sendText(sender, "Так же можно выбрать покупку из каталога, добавленных ранее.").thenAccept(uuid -> {
+                bot.interactiveApi().send(sender, buildUI(allOldPurchases));
+            });
         }
 
     }
