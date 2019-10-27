@@ -41,6 +41,10 @@ public class UserService {
         userMap.get(userId).setLastState(lastState);
     }
 
+    public boolean hasUser(int userId) {
+        return userMap.containsKey(userId);
+    }
+
     public boolean userInited(int userId) {
         return userMap.get(userId).isUserInit();
     }

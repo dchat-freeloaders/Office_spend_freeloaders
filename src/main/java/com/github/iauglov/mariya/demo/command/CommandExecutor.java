@@ -36,6 +36,17 @@ public class CommandExecutor {
         if (isCommand(text)) {
             factory.getCommand(message).execute();
         } else {
+            if (!userService.hasUser(message.getPeer().getId())) {
+                factory.getCommand(new Message(
+                        null,
+                        message.getSender(),
+                        message.getMessageId(),
+                        START,
+                        Instant.now(Clock.systemUTC()).toEpochMilli(),
+                        null
+                )).execute();
+                return;
+            }
             int userId = message.getSender().getId();
             String lastUserState = userService.getLastUserState(userId);
             if (SETUP_BUDGET.equalsIgnoreCase(lastUserState)) {
